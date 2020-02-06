@@ -11,15 +11,16 @@ const peopleUrl = 'https://randomuser.me/api/?results=12&nat=us';
 // When the window load the fetch API is being processed
 //generating the profiles and the HTML rendering
 
-window.addEventListener('load', () => {
-  fetch(peopleUrl)
-    .then(response => response.json())
-    .then(getProfiles)
-    .then(generateHTML)
-    .catch(err => {
-      document.write('Something went wrong');
-      console.log(err);
-    });
+window.addEventListener('load', async () => {
+  try {
+    const response = await fetch(peopleUrl);
+    const responseJson = await response.json();
+    const profiles = getProfiles(responseJson);
+    generateHTML(profiles);
+  } catch (err) {
+    document.write('Something went wrong');
+    console.log(err);
+  }
 });
 
 // ------------------------------------------
@@ -43,7 +44,7 @@ function getProfiles(json) {
     profileArr.push({
       firstName,
       lastName,
-     picture,
+      picture,
       email,
       city,
       state,
@@ -56,9 +57,8 @@ function getProfiles(json) {
   return profileArr;
 }
 
-
 // ------------------------------------------
-//  HTML RENDERING ELEMENTS 
+//  HTML RENDERING ELEMENTS
 // ------------------------------------------
 
 // this function create the all the HTML elements and render it to the screen;
@@ -73,9 +73,7 @@ function generateHTML(arr) {
           <img class="card-img" src=${profile.picture} alt="profile picture">
           </div>
           <div class="card-info-container">
-          <h3 id="name" class="card-name cap">${profile.firstName} ${
-      profile.lastName
-    }</h3>
+          <h3 id="name" class="card-name cap">${profile.firstName} ${profile.lastName}</h3>
           <p class="card-text">${profile.email}</p>
           <p class="card-text cap">${profile.city}, ${profile.state}</p>
           </div>
@@ -114,7 +112,7 @@ function generateHTML(arr) {
 
   //when a card is clicked the name of the card and the name of the modal cards are compared.
   //if there is a match, the modal window visibility will be visibile
-  
+
   $('.card').on('click', e => {
     const card = e.currentTarget;
     const cardName = card.querySelector('.card-name').textContent;
@@ -138,7 +136,6 @@ function generateHTML(arr) {
 //  HELPER FUNCTION FOR PHONE AND BIRTHDAY FORMATTING
 // --------------------------------------------------
 
-
 function formatPhoneNumber(phoneNumberString) {
   const cleaned = ('' + phoneNumberString).replace(/\D/g, '');
   const match = cleaned.match(/^(\d{3})(\d{3})(\d{4})$/);
@@ -153,4 +150,3 @@ function formatBirthday(date) {
   const newEvent = newDate.toLocaleDateString('en-US');
   return newEvent;
 }
-
