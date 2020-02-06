@@ -30,17 +30,13 @@ window.addEventListener('load', async () => {
 function getProfiles(json) {
   const profileArr = [];
   json.results.forEach(person => {
-    const firstName = person.name.first;
-    const lastName = person.name.last;
+    const { first: firstName, last: lastName } = person.name;
     const picture = person.picture.large;
     const email = person.email;
-    const city = person.location.city;
-    const state = person.location.state;
-    const street = person.location.street;
-    const postcode = person.location.postcode;
+    const { city, state, street, postcode } = person.location;
     const birthday = person.dob.date;
     const cell = person.cell;
-
+   
     profileArr.push({
       firstName,
       lastName,
