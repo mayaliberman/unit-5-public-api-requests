@@ -102,12 +102,14 @@ function generateHTML(arr) {
         <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
           <div class="modal-info-container">
               <img class="modal-img" src=${picture} alt="profile picture">
-                <h3 id="name" class="modal-name cap">${firstName} ${lastName}</h3>
+                <h3 id="modal-name" class="modal-name cap">${firstName} ${lastName}</h3>
                 <p class="modal-text">${email}</p>
                 <p class="modal-text cap">${city}</p>
                 <hr>
                 <p class="modal-text">${formatPhoneNumber(cell)}</p>
-                <p class="modal-text cap">${street.number} ${street.name}, ${city}, ${state} ,${postcode}</p>
+                <p class="modal-text cap">${street.number} ${
+      street.name
+    }, ${city}, ${state} ,${postcode}</p>
                 <p class="modal-text">Birthday: ${formatBirthday(birthday)}</p>
             </div>
       </div>
@@ -118,39 +120,33 @@ function generateHTML(arr) {
     const scriptJS = document.getElementsByTagName('script')[0];
     document.body.insertBefore(modalContainer, scriptJS);
   }
+//creating the modal and deleting it when pressing the close button
+  const cards = document.querySelectorAll('.card');
 
-  
+  for (const card of cards) {
+    card.addEventListener('click', e => {
+      const currentCard = e.currentTarget;
+      const cardEmail = currentCard.querySelector('#email').textContent;
 
-  const card = document.querySelector('.card');
-  card.addEventListener('click', e => {
-    
-    const currentCard = e.currentTarget;
-    console.log(currentCard);
-    console.log(arr);
-    const cardEmail = currentCard.querySelector('#email').textContent;
-    console.log(cardEmail)
-    const cardsModal = document.querySelectorAll('.modal-container');
-    for (let i = 0; i < arr.length; i++) {
-     
-      if(cardEmail === arr[i].email) {
-        console.log(cardEmail, arr[i].street, arr[i].picture)
-        createModal(arr[i])
+      for (let i = 0; i < arr.length; i++) {
+        if (cardEmail === arr[i].email) {
+          createModal(arr[i]);
+        }
+        if (document.body.contains(document.querySelector('.modal'))) {
+          const modalCloseBtn = document.querySelector('#modal-close-btn');
+          modalCloseBtn.addEventListener('click', () => {
+            const modalContainer = document.querySelector('.modal-container');
+            if (modalContainer) {
+              modalContainer.remove();
+            }
+          });
+        }
       }
-      // const modalName = cardsModal[i].querySelector('#name').textContent;
-      // if (modalName === cardName) {
-      //   cardsModal[i].style.display = 'block';
-      // }
-    }
-  });
-
-  
-
-  //When the close button is clicked the modal window visibility will be hidden again
-
-  $('.modal-close-btn').on('click', () => {
-    $('.modal-container').css('display', 'none');
-  });
+    });
+  }
 }
+
+
 
 // --------------------------------------------------
 //  HELPER FUNCTION FOR PHONE AND BIRTHDAY FORMATTING
