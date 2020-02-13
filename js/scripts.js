@@ -16,7 +16,7 @@ window.addEventListener('load', async () => {
     const response = await fetch(peopleUrl);
     const responseJson = await response.json();
     const profiles = getProfiles(responseJson);
-    generateHTML(profiles);
+    generateCards(profiles);
   } catch (err) {
     document.write('Something went wrong');
     console.log(err);
@@ -30,25 +30,11 @@ window.addEventListener('load', async () => {
 function getProfiles(json) {
   const profileArr = [];
   json.results.forEach(person => {
-    const { first: firstName, last: lastName } = person.name;
-    const picture = person.picture.large;
-    const email = person.email;
-    const { city, state, street, postcode } = person.location;
-    const birthday = person.dob.date;
-    const cell = person.cell;
-
-    profileArr.push({
-      firstName,
-      lastName,
-      picture,
-      email,
-      city,
-      state,
-      street,
-      postcode,
-      birthday,
-      cell
-    });
+  
+    profileArr.push(
+      getProfile(person)
+    
+    );
   });
   return profileArr;
 }
@@ -58,12 +44,13 @@ function getProfiles(json) {
 // ------------------------------------------
 
 // this function create the all the HTML elements and render it to the screen;
-function generateHTML(arr) {
+function generateCards(profiles) {
   const gallery = document.getElementById('gallery');
-  arr.forEach(profile => {
+  profiles.forEach(profile => {
     const { picture, firstName, lastName, email, city, state } = profile;
     const card = document.createElement('div');
     card.className += 'card';
+    card.setAttribute('data-email', email);
     gallery.appendChild(card);
     card.innerHTML = `
           <div class="card-img-container">
@@ -77,76 +64,58 @@ function generateHTML(arr) {
           </div>
           `;
   });
+  addModalEvents(profiles);
+}
 
-  //when a card is clicked the name of the card and the name of the modal cards are compared.
-  //if there is a match, the modal window visibility will be visibile
-
-  function createModal(profile) {
-    const {
-      picture,
-      firstName,
-      lastName,
-      email,
-      city,
-      cell,
-      street,
-      state,
-      postcode,
-      birthday
-    } = profile;
-    //creation of the modal window, hide it by visibility hidden
-    const modalContainer = document.createElement('div');
-    modalContainer.className += 'modal-container';
-    modalContainer.innerHTML = `
-      <div class="modal">
-        <button type="button" id="modal-close-btn" class="modal-close-btn"><strong>X</strong></button>
-          <div class="modal-info-container">
-              <img class="modal-img" src=${picture} alt="profile picture">
-                <h3 id="modal-name" class="modal-name cap">${firstName} ${lastName}</h3>
-                <p class="modal-text">${email}</p>
-                <p class="modal-text cap">${city}</p>
-                <hr>
-                <p class="modal-text">${formatPhoneNumber(cell)}</p>
-                <p class="modal-text cap">${street.number} ${
-      street.name
-    }, ${city}, ${state} ,${postcode}</p>
-                <p class="modal-text">Birthday: ${formatBirthday(birthday)}</p>
-            </div>
-      </div>
-      `;
-
-    modalContainer.style.display = 'block';
-
-    const scriptJS = document.getElementsByTagName('script')[0];
-    document.body.insertBefore(modalContainer, scriptJS);
-  }
-//creating the modal and deleting it when pressing the close button
+function addModalEvents(profiles) {
   const cards = document.querySelectorAll('.card');
-
   for (const card of cards) {
     card.addEventListener('click', e => {
       const currentCard = e.currentTarget;
-      const cardEmail = currentCard.querySelector('#email').textContent;
-
-      for (let i = 0; i < arr.length; i++) {
-        if (cardEmail === arr[i].email) {
-          createModal(arr[i]);
-        }
-        if (document.body.contains(document.querySelector('.modal'))) {
-          const modalCloseBtn = document.querySelector('#modal-close-btn');
-          modalCloseBtn.addEventListener('click', () => {
-            const modalContainer = document.querySelector('.modal-container');
-            if (modalContainer) {
-              modalContainer.remove();
-            }
-          });
-        }
-      }
+      const dataEmail = currentCard.getAttribute('data-email');
+      const profile = profiles.find(item => item.email === dataEmail);
+      updateModal(profile);
     });
   }
 }
 
 
+//Update Modal
+function updateModal(profile) {
+  console.log(profile)
+  // var your_div = document.getElementById('your_div');
+{/* <img class="modal-img picture" src="https://placehold.it/125x125" alt="profile picture">
+                        <h3 class="modal-name cap"><span class="fistName">firstname</span>&nbsp;<span class="lastName">lastname</span></h3>
+                        <p class="modal-text email">email</p>
+                        <p class="modal-text cap city">city</p>
+                        <hr>
+                        <p class="modal-text cell">(555) 555-5555</p>
+                        <p class="modal-text street">123 Portland Ave., Portland, OR 97204</p>
+                        <p class="modal-text birthday">Birthday: 10/21/2015</p>
+  // var text_to_change = your_div.childNodes[0];
+
+  // text_to_change.nodeValue = 'new text'; */}
+  const cardContainer = document.querySelector('.modal-info-container');
+  cardContainer.childNodes[1].querySelector(profile.picture) = profile.picture;
+  // const cardChilds = cardContainer.childNodes;
+  //   for (item in profile) {
+  //   cardContainer.getElementByClassName(item).textContent = item;
+  //     }
+  document.querySelector('.modal-container').style.display = 'block';
+}
+//creating the modal and deleting it when pressing the close button
+
+function closeModal() {
+  if (document.body.contains(document.querySelector('.modal'))) {
+    const modalCloseBtn = document.querySelector('#modal-close-btn');
+    modalCloseBtn.addEventListener('click', () => {
+      const modalContainer = document.querySelector('.modal-container');
+      if (modalContainer) {
+        modalContainer.remove();
+      }
+    });
+  }
+}
 
 // --------------------------------------------------
 //  HELPER FUNCTION FOR PHONE AND BIRTHDAY FORMATTING
@@ -165,4 +134,25 @@ function formatBirthday(date) {
   const newDate = new Date(date);
   const newEvent = newDate.toLocaleDateString('en-US');
   return newEvent;
+}
+
+function getProfile(profile) {
+  const { first: firstName, last: lastName } = profile.name;
+  const picture = profile.picture.large;
+  const email = profile.email;
+  const { city, state, street, postcode } = profile.location;
+  const birthday = profile.dob.date;
+  const cell = profile.cell;
+  return {
+    firstName,
+    lastName,
+    picture,
+    email,
+    city,
+    state,
+    street,
+    postcode,
+    birthday,
+    cell
+  };
 }
