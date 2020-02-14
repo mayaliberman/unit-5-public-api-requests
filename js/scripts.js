@@ -82,41 +82,24 @@ function addModalEvents(profiles) {
 
 //Update Modal
 function updateModal(profile) {
-  console.log(profile)
-  // var your_div = document.getElementById('your_div');
-{/* <img class="modal-img picture" src="https://placehold.it/125x125" alt="profile picture">
-                        <h3 class="modal-name cap"><span class="fistName">firstname</span>&nbsp;<span class="lastName">lastname</span></h3>
-                        <p class="modal-text email">email</p>
-                        <p class="modal-text cap city">city</p>
-                        <hr>
-                        <p class="modal-text cell">(555) 555-5555</p>
-                        <p class="modal-text street">123 Portland Ave., Portland, OR 97204</p>
-                        <p class="modal-text birthday">Birthday: 10/21/2015</p>
-  // var text_to_change = your_div.childNodes[0];
+  // const city = document.querySelectorAll('.modal-info-container .city').item(0).innerHTML = profile.city;
+  // console.log(city)
+  
+  for(item in profile) {
+    const child = document.querySelectorAll(`.modal-info-container .${item}`).item(0).innerHTML = item;
+  //  child.innerHTML = profile[item];
+  console.log(profile[item]);
 
-  // text_to_change.nodeValue = 'new text'; */}
-  const cardContainer = document.querySelector('.modal-info-container');
-  cardContainer.childNodes[1].querySelector(profile.picture) = profile.picture;
-  // const cardChilds = cardContainer.childNodes;
-  //   for (item in profile) {
-  //   cardContainer.getElementByClassName(item).textContent = item;
-  //     }
+  }
   document.querySelector('.modal-container').style.display = 'block';
 }
-//creating the modal and deleting it when pressing the close button
+//Closing the button
+const modalButton = document.querySelector('.modal-close-btn');
+modalButton.addEventListener('click', ( )=> {
+  document.querySelector('.modal-container').style.display = 'none';
+})
 
-function closeModal() {
-  if (document.body.contains(document.querySelector('.modal'))) {
-    const modalCloseBtn = document.querySelector('#modal-close-btn');
-    modalCloseBtn.addEventListener('click', () => {
-      const modalContainer = document.querySelector('.modal-container');
-      if (modalContainer) {
-        modalContainer.remove();
-      }
-    });
-  }
-}
-
+//document.getElementById("myImg").src = "hackanm.gif";
 // --------------------------------------------------
 //  HELPER FUNCTION FOR PHONE AND BIRTHDAY FORMATTING
 // --------------------------------------------------
