@@ -104,7 +104,6 @@ function updateModal(profile) {
 //Next Module
 function nextModule(profiles) {
   const modalNext = document.querySelector(".modal-next");
-  const modalPrev = document.querySelectorAll(".model-prev");
   modalNext.addEventListener("click", () => {
     const modalEmail = document.querySelector(".modal-container .email")
       .textContent;
@@ -112,10 +111,8 @@ function nextModule(profiles) {
     const profileIndex = profiles.indexOf(modalProfile);
     if (profiles[profileIndex + 1]) {
       updateModal(profiles[profileIndex + 1]);
-      modalNext.style.display = "block";
     } else {
-      modalNext.style.display = "none";
-      modalPrev.style.display = "block";
+      return;
     }
   });
 }
@@ -123,18 +120,15 @@ function nextModule(profiles) {
 //Prev Module
 function prevModule(profiles) {
   const modalPrev = document.querySelector(".modal-prev");
-  const modalNext = document.querySelectorAll(".modal-next");
   modalPrev.addEventListener("click", () => {
     const modalEmail = document.querySelector(".modal-container .email")
       .textContent;
     const modalProfile = profiles.find(item => item.email === modalEmail);
     const profileIndex = profiles.indexOf(modalProfile);
-    if (profiles[profileIndex - 1]) {
+    if (profiles[profileIndex - 1] !== undefined) {
       updateModal(profiles[profileIndex - 1]);
-      modalPrev.style.display = "block";
-    } else {
-      modalPrev.style.display = "none";
-      modalNext.style.display = "block";
+    } else if (profiles[profileIndex - 1] === undefined) {
+      return;
     }
   });
 }
