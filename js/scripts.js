@@ -61,6 +61,7 @@ function generateCards(profiles) {
           `;
   });
   addModalEvents(profiles);
+  search();
 }
 
 function addModalEvents(profiles) {
@@ -88,9 +89,9 @@ function updateModal(profile) {
     } else if (item === "picture") {
       document.querySelector(`.modal-info-container .${item}`).src =
         profile[item];
-    } else if (item === "postcode") {
-    } else if (item === "state") {
-    } else if (item === "lastName") {
+    } else if (item === "postcode" || item === 'state') {
+      continue;
+    }  else if (item === "lastName") {
       document.querySelector(`.cap .${item}`).innerHTML = profile[item];
     } else {
       document
@@ -137,6 +138,30 @@ const modalButton = document.querySelector(".modal-close-btn");
 modalButton.addEventListener("click", () => {
   document.querySelector(".modal-container").style.display = "none";
 });
+
+//Search Input
+function search () {
+  const search = document.querySelector('.search-input');
+  const names = document.querySelectorAll('.card-name');
+  
+  search.addEventListener('key', (e)=> {
+  const result = e.target.value;
+  for(let name of names) {
+    const includesName =  name.textContent.includes(result);
+    if(!result) {
+      continue;
+    }
+   else if(name.textContent.toLowerCase() === result.toLowerCase()) {
+     name.parentElement.parentElement.style.display = 'block';
+   } else {
+    name.parentElement.parentElement.style.display = 'none';
+   }
+  }
+  
+  
+  })
+
+}
 
 // --------------------------------------------------
 //  HELPER FUNCTION FOR PHONE AND BIRTHDAY FORMATTING
