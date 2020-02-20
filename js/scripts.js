@@ -39,7 +39,6 @@ function getProfiles(json) {
 //  HTML RENDERING ELEMENTS
 // ------------------------------------------
 
-// this function create the all the HTML elements and render it to the screen;
 function generateCards(profiles) {
   const gallery = document.getElementById("gallery");
   profiles.forEach(profile => {
@@ -64,6 +63,9 @@ function generateCards(profiles) {
   search();
 }
 
+// --------------------------------------------------
+//  MODAL EVENTS AND FUNCTIONS
+// --------------------------------------------------
 function addModalEvents(profiles) {
   const cards = document.querySelectorAll(".card");
   for (const card of cards) {
@@ -77,6 +79,7 @@ function addModalEvents(profiles) {
 
   nextModule(profiles);
   prevModule(profiles);
+  closeModal();
 }
 
 function updateModal(profile) {
@@ -102,7 +105,7 @@ function updateModal(profile) {
   document.querySelector(".modal-container").style.display = "block";
 }
 
-//Next Module
+
 function nextModule(profiles) {
   const modalNext = document.querySelector(".modal-next");
   modalNext.addEventListener("click", () => {
@@ -118,7 +121,7 @@ function nextModule(profiles) {
   });
 }
 
-//Prev Module
+
 function prevModule(profiles) {
   const modalPrev = document.querySelector(".modal-prev");
   modalPrev.addEventListener("click", () => {
@@ -133,34 +136,38 @@ function prevModule(profiles) {
     }
   });
 }
-//Closing the button
-const modalButton = document.querySelector(".modal-close-btn");
-modalButton.addEventListener("click", () => {
-  document.querySelector(".modal-container").style.display = "none";
-});
 
-//Search Input
+
+function closeModal () {
+  const modalButton = document.querySelector(".modal-close-btn");
+  modalButton.addEventListener("click", () => {
+    document.querySelector(".modal-container").style.display = "none";
+  });
+}
+
+// --------------------------------------------------
+//  SEARCH FUNCTION
+// --------------------------------------------------
 function search () {
-  const search = document.querySelector('.search-input');
-  const names = document.querySelectorAll('.card-name');
-  
-  search.addEventListener('key', (e)=> {
-  const result = e.target.value;
-  for(let name of names) {
-    const includesName =  name.textContent.includes(result);
-    if(!result) {
-      continue;
+  const searchInput = document.getElementById('search-input');
+  searchInput.addEventListener('keyup', getFilteredNames);
+  searchInput.addEventListener('search', getFilteredNames);
+  function getFilteredNames(event) {
+    event.preventDefault();
+    const filter = searchInput.value.toLowerCase();
+    const names = document.querySelectorAll(".card-name");
+    for (let name of names) {
+      txtValue = name.textContent || name.innerText;
+      if (filter === '') {
+         name.parentNode.parentNode.style.display = "";
+      }
+      if (txtValue.toLowerCase().indexOf(filter)  > -1  ) {
+        name.parentNode.parentNode.style.display = "";
+      } else {
+        name.parentNode.parentNode.style.display = "none";
+      }
     }
-   else if(name.textContent.toLowerCase() === result.toLowerCase()) {
-     name.parentElement.parentElement.style.display = 'block';
-   } else {
-    name.parentElement.parentElement.style.display = 'none';
-   }
   }
-  
-  
-  })
-
 }
 
 // --------------------------------------------------

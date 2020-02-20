@@ -119,6 +119,10 @@ header h1 {
     text-transform: capitalize;
 }
 
+p {
+    font-weight: 400;
+    color: rgba(50, 50, 50, 0.7);
+}
 
 /* ===================================== 
    Modal
