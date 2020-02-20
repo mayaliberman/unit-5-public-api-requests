@@ -2,6 +2,15 @@
 //  API URL
 // ------------------------------------------
 
+// Oded:
+// all code in this page should be inside an iife, to prefent namespace collisions with native or third party code
+// iife: https://developer.mozilla.org/en-US/docs/Glossary/IIFE
+/*
+  (function (window) {
+    const peopleUrl = "https://randomuser.me/api/?results=12&nat=us";
+    ...
+  })(window);
+*/
 const peopleUrl = "https://randomuser.me/api/?results=12&nat=us";
 
 // ------------------------------------------
@@ -18,6 +27,11 @@ window.addEventListener("load", async () => {
     const profiles = getProfiles(responseJson);
     generateCards(profiles);
   } catch (err) {
+    // Oded: should avoide the use of documet write, it's considered bad practice for a long time
+    // see here: https://stackoverflow.com/questions/802854/why-is-document-write-considered-a-bad-practice
+    // instead use:
+    document.getElementById("error").textContent = 'bla bla'; 
+    // 
     document.write("Something went wrong");
     console.log(err);
   }
@@ -28,6 +42,10 @@ window.addEventListener("load", async () => {
 // ------------------------------------------
 
 function getProfiles(json) {
+  // Oded: forEach is also good, but some interviewres will want to see here usage of array.map 
+  // it's shorter, cleaner and more versitale can chain methods like filter:
+  return json.results.map(person -> getSingleProfile(person)); 
+  // 
   const profileArr = [];
   json.results.forEach(person => {
     profileArr.push(getSingleProfile(person));
@@ -44,6 +62,10 @@ function generateCards(profiles) {
   profiles.forEach(profile => {
     const { picture, firstName, lastName, email, city, state } = profile;
     const card = document.createElement("div");
+    // Oded: it's better to use classList then className
+    //
+    card.classList.add("card")
+    //
     card.className += "card";
     card.setAttribute("data-email", email);
     gallery.appendChild(card);
@@ -70,6 +92,7 @@ function addModalEvents(profiles) {
   const cards = document.querySelectorAll(".card");
   for (const card of cards) {
     card.addEventListener("click", e => {
+      // Oded: function can be extrcted out, no need to create new one for each event handler
       const currentCard = e.currentTarget;
       const dataEmail = currentCard.getAttribute("data-email");
       const profile = profiles.find(item => item.email === dataEmail);
@@ -83,6 +106,7 @@ function addModalEvents(profiles) {
 }
 
 function updateModal(profile) {
+  // Oded: you can also use <template> to prevent the existence of the modal in dom, before the user clicked on card.
   const address = `${profile.street.number}, ${profile.street.name} ${profile.city}, ${profile.state} ${profile.postcode}`;
   for (item in profile) {
     if (item === "street") {
@@ -107,6 +131,25 @@ function updateModal(profile) {
 
 
 function nextModule(profiles) {
+  // Oded: this nextModule and prevModule is almost identical, should be refactored
+  // to use a generic function something like:
+  /*
+    functtion navModule(profiles, modals) {
+      modals.forEach(modal => {
+        modal.addEventListener("click", e => {
+         // Oded: prefered to extract out function
+         // also prefered to use this or e.currentTarget insted of query all dom
+         const modalEmail = this.querySelector(".modal-container .email")
+          .textContent;
+         const direction = this.dataset.directions; // should be 1 or -1 
+         const modalProfile = profiles.find(item => item.email === modalEmail);
+         const profileIndex = profiles.indexOf(modalProfile);
+         if (profiles[profileIndex + direction]) {
+          updateModal(profiles[profileIndex + direction]);
+         }
+    }
+      });
+  */
   const modalNext = document.querySelector(".modal-next");
   modalNext.addEventListener("click", () => {
     const modalEmail = document.querySelector(".modal-container .email")
@@ -116,6 +159,7 @@ function nextModule(profiles) {
     if (profiles[profileIndex + 1]) {
       updateModal(profiles[profileIndex + 1]);
     } else {
+      // Oded: no need for this return and the else {}
       return;
     }
   });
